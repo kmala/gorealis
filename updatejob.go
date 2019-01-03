@@ -46,6 +46,11 @@ func NewDefaultUpdateJob(config *aurora.TaskConfig) *UpdateJob {
 			continue
 		}
 
+		if ptr.NumGpus != nil {
+			job.resources["gpu"].NumGpus = ptr.NumGpus
+			continue
+		}
+
 		if ptr.DiskMb != nil {
 			job.resources["disk"].DiskMb = ptr.DiskMb
 			continue
@@ -83,6 +88,11 @@ func NewUpdateJob(config *aurora.TaskConfig, settings *aurora.JobUpdateSettings)
 
 		if ptr.RamMb != nil {
 			job.resources["ram"].RamMb = ptr.RamMb
+			continue
+		}
+
+		if ptr.NumGpus != nil {
+			job.resources["gpu"].NumGpus = ptr.NumGpus
 			continue
 		}
 

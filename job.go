@@ -26,6 +26,7 @@ type Job interface {
 	Role(role string) Job
 	Name(name string) Job
 	CPU(cpus float64) Job
+	GPU(gpus int64) Job
 	CronSchedule(cron string) Job
 	CronCollisionPolicy(policy aurora.CronCollisionPolicy) Job
 	Disk(disk int64) Job
@@ -85,6 +86,7 @@ func NewJob() Job {
 
 	// Resources
 	numCpus := aurora.NewResource()
+	numGPUs := aurora.NewResource()
 	ramMb := aurora.NewResource()
 	diskMb := aurora.NewResource()
 
@@ -92,15 +94,18 @@ func NewJob() Job {
 	resources["cpu"] = numCpus
 	resources["ram"] = ramMb
 	resources["disk"] = diskMb
+	resources["gpu"] = numGPUs
 
 	taskConfig.Resources = make(map[*aurora.Resource]bool)
 	taskConfig.Resources[numCpus] = true
 	taskConfig.Resources[ramMb] = true
 	taskConfig.Resources[diskMb] = true
+	taskConfig.Resources[numGPUs] = true
 
 	numCpus.NumCpus = new(float64)
 	ramMb.RamMb = new(int64)
 	diskMb.DiskMb = new(int64)
+	numGPUs.NumGpus = new(int64)
 
 	return &AuroraJob{
 		jobConfig: jobConfig,
@@ -156,6 +161,12 @@ func (j *AuroraJob) ExecutorData(data string) Job {
 
 func (j *AuroraJob) CPU(cpus float64) Job {
 	*j.resources["cpu"].NumCpus = cpus
+
+	return j
+}
+
+func (j *AuroraJob) GPU(gpus int64) Job {
+	*j.resources["gpu"].NumGpus = gpus
 
 	return j
 }
